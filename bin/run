@@ -3,8 +3,12 @@
 # Run BIDS-CPAC Gear
 # Built to flywheel-v0 spec.
 #
+FLYWHEEL_BASE=/flywheel/v0
+LOG_FILE=$FLYWHEEL_BASE/output/cpac.log
 
-LOG_FILE=/flywheel/v0/output/cpac.log
+# Load the env from the docker image
+source ${FLYWHEEL_BASE}/docker-env.sh
+
 (
     GEAR=c-pac
     REPO=flywheel
@@ -20,7 +24,6 @@ LOG_FILE=/flywheel/v0/output/cpac.log
     ###############################################################################
     # Configure paths
 
-    FLYWHEEL_BASE=/flywheel/v0
     OUTPUT_DIR=$FLYWHEEL_BASE/output
     INPUT_DIR=$FLYWHEEL_BASE/input
 

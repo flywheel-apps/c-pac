@@ -27,5 +27,8 @@ COPY bin/run \
 # Handle file properties for execution
 RUN chmod +x ${FLYWHEEL}/run
 
+# Handle Environment preservation for Flywheel Engine
+RUN env -u HOSTNAME -u PWD > ${FLYWHEEL}/docker-env.sh
+
 # Run the run.sh script on entry.
 ENTRYPOINT ["/flywheel/v0/run"]
