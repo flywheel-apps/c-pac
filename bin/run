@@ -1,0 +1,80 @@
+#! /bin/bash
+#
+# Run BIDS-CPAC Gear
+# Built to flywheel-v0 spec.
+#
+
+LOG_FILE=/flywheel/v0/output/cpac.log
+(
+    GEAR=c-pac
+    REPO=flywheel
+    CONTAINER="[${REPO}/$GEAR]"
+
+    echo -e "$CONTAINER  Initiated"
+    set -e
+
+    ###############################################################################
+    # Configure ENV
+
+
+    ###############################################################################
+    # Configure paths
+
+    FLYWHEEL_BASE=/flywheel/v0
+    OUTPUT_DIR=$FLYWHEEL_BASE/output
+    INPUT_DIR=$FLYWHEEL_BASE/input
+
+    ANAT_DIR=$INPUT_DIR/anatomical # Must match input from the manifest
+    FUNC_DIR=$INPUT_DIR/functional # Must match input from the manifest
+    CONFIG_FILE=${FLYWHEEL_BASE}/config.json
+
+    ANATOMICAL=`find ${ANAT_DIR}/* -name "*.nii*"`
+    FUNCTIONAL=`find ${FUNC_DIR}/* -name "*.nii*"`
+
+    # Make the BIDS directory
+    # TODO (1) allow this to be an in put parameter
+    BIDS_DIR=/bids/sub-01
+    mkdir -p $BIDS_DIR/anat
+    mkdir -p $BIDS_DIR/func
+
+    # Copy data into place
+    # TODO (1). mv not cp. (2) Names have to meet bids spec. (3) Check extensions.
+    cp -a $FUNC_DIR/* $BIDS_DIR/func/sub-01_ses-1_task-rest_acq-fullbrain_run-1_bold.nii.gz
+    cp -a $ANAT_DIR/* $BIDS_DIR/anat/sub-01_T1w.nii.gz
+
+
+    ###############################################################################
+    # C-PAC
+
+    # Run C-PAC
+    # TODO handle --n_cpus
+    time /code/run.py /bids $OUTPUT_DIR participant --n_cpus 8
+
+
+    ###############################################################################
+    # FINISH
+
+    # If outputs exist, generate metadata, and exit
+    if [[ -d ${OUTPUT_DIR}/output ]] && [[ ! -d ${OUTPUT_DIR}/crash ]];
+    then
+      echo "Compressing outputs..."
+
+      # Set file permissions prior to compression
+      chmod -R 777 ${OUTPUT_DIR}
+      cd ${OUTPUT_DIR}
+      zip -r cpac_output_`date +"%Y%m%d"`.zip output log
+      rm -rf ${OUTPUT_DIR}/output ${OUTPUT_DIR}/log # Remove the output directory
+
+      # Set permissions for outputs (prevent root only r/w)
+      chmod -R 777 $OUTPUT_DIR
+
+      # End
+      echo -e "$CONTAINER  Done!"
+    else
+      echo "$CONTAINER  FAILED: No results found in output directory... Exiting"
+      exit 1
+    fi
+
+    exit 0
+
+)  2>&1 | tee $LOG_FILE
