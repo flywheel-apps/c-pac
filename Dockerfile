@@ -10,7 +10,7 @@
 FROM bids/cpac:v1.0.1a_7
 
 # Note the Maintainer
-MAINTAINER Michael Perry <lmperry@stanford.edu>
+MAINTAINER Michael Perry <michaelperry@flywheel.io>
 
 # Install packages
 RUN apt-get update && apt-get install -y zip

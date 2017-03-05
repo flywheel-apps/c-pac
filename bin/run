@@ -18,10 +18,6 @@ source ${FLYWHEEL_BASE}/docker-env.sh
     set -e
 
     ###############################################################################
-    # Configure ENV
-
-
-    ###############################################################################
     # Configure paths
 
     OUTPUT_DIR=$FLYWHEEL_BASE/output
@@ -50,14 +46,14 @@ source ${FLYWHEEL_BASE}/docker-env.sh
     # C-PAC
 
     # Run C-PAC
-    # TODO handle --n_cpus
-    time /code/run.py /bids $OUTPUT_DIR participant --n_cpus 8
+    # TODO handle configuration options
+    time /code/run.py /bids $OUTPUT_DIR participant
 
 
     ###############################################################################
     # FINISH
 
-    # If outputs exist, generate metadata, and exit
+    # Check for outputs and errors/crash
     if [[ -d ${OUTPUT_DIR}/output ]] && [[ ! -d ${OUTPUT_DIR}/crash ]];
     then
       echo "Compressing outputs..."
