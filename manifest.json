@@ -24,5 +24,8 @@
 		}
 	},
 	"config": {
+	}, 
+	"custom": {
+		"docker-image": "flywheel/c-pac:v0.0.1"
 	}
 }
