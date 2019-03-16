@@ -12,11 +12,14 @@ FROM fcpindi/c-pac:latest
 # Note the Maintainer
 MAINTAINER Michael Perry <michaelperry@flywheel.io>
 
+# Save docker environ
+RUN python -c 'import os, json; f = open("/cpac_environ.json", "w"); json.dump(dict(os.environ), f)'
+
 # Install packages
 RUN apt-get update && apt-get install -y zip python3-pip
 
 # Install flywheel_bids
-RUN pip3 install flywheel_sdk flywheel_bids
+RUN pip3 install flywheel_sdk==6.1.0-dev.2 flywheel_bids
 
 # Make directory for flywheel spec (v0)
 ENV FLYWHEEL /flywheel/v0

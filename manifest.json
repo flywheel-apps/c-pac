@@ -8,25 +8,25 @@
     "source": "https://github.com/flywheel-apps/c-pac",
     "license": "Apache-2.0",
     "flywheel": "0",
-    "version": "0.1.0-dev.6",
+    "version": "0.1.0-dev.12",
     "inputs": {
         "api-key": {
             "base": "api-key"
         },
-	"pipeline_file": {
-	    "base": "file",
-	    "optional": true,
-	    "description": "An optional custom pipeline file"
-	}
+        "pipeline_file": {
+            "base": "file",
+            "optional": true,
+            "description": "An optional custom pipeline file"
+        }
     },
     "config": {
     },
     "command": "./run.py",
     "custom": {
-        "docker-image": "flywheel/c-pac:0.1.0-dev.6",
-	"gear-builder": {
-		"category": "analysis",
-		"image": "flywheel/c-pac:latest"
-	}
+        "docker-image": "flywheel/c-pac:0.1.0-dev.12",
+        "gear-builder": {
+                "category": "analysis",
+                "image": "flywheel/c-pac:latest"
+        }
     }
 }

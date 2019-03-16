@@ -7,78 +7,43 @@ import sys
 import zipfile
 
 import flywheel
-from flywheel_bids.export_bids import download_bids_dir
 
 
-log = logging.getLogger('bids-test')
-INT_DIR = '/v0/flywheel/int_dir'
-BIDS_DIR = '/v0/flywheel/bids'
-OUT_DIR = '/v0/flywheel/output'
+log = logging.getLogger('flywheel:C-PAC')
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    with flywheel.GearContext() as context:
+        context.init_logging()
+        context.log_config()
 
-    log.info('PATH: %s', os.environ['PATH'])
+        # Find the pipeline file path
+        pipeline_file_path = context.get_input_path('pipeline_file')
 
-    invocation  = json.loads(open('config.json').read())
-    config      = invocation['config']
-    inputs      = invocation['inputs']
-    destination = invocation['destination']
+        # Download bids first
+        bids_dir = context.download_session_bids()
 
-    log.info('Inputs: %s', inputs)
-    pipeline_file = inputs.get('pipeline_file')
+        # Load environment
+        with open('/cpac_environ.json', 'r') as f:
+            environ = json.load(f)
 
-    # Create FW client
-    fw = flywheel.Client(inputs['api-key']['key'])
+        # Launch cpac
+        if pipeline_file_path:
+            cmd = ['/code/run.py', '--pipeline_file', pipeline_file_path, bids_dir, context.work_dir, 'participant']
+        else:
+            cmd = ['/code/run.py', bids_dir, context.work_dir, 'participant']
 
-    # For local testing
-    if destination['id'] == 'aex':
-        destination = {'type': 'analysis', 'id': '5c82871cbcd3b900285c0496'}
+        log.info('calling C-PAC: %s', cmd)
+        subprocess.check_call(cmd, env=environ)
 
-    session = destination
-    if destination['type'] == 'analysis':
-        analysis = fw.get(destination['id'])
-        session = analysis.parent
+        int_output_path = os.path.join(context.work_dir, 'output')
+        out_path = os.path.join(context.output_dir, 'results.zip')
 
-    log.info('Using source container: %s', session)
-
-    # Land session in BIDS format
-    for path in (INT_DIR, BIDS_DIR, OUT_DIR):
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-    # Download bids first
-    download_bids_dir(fw, session['id'], session['type'], BIDS_DIR)
-
-    # Launch cpac
-    environ = os.environ.copy()
-    environ['PATH'] = ':'.join(['/usr/local/miniconda/bin', '/opt/ICA-AROMA', '/usr/lib/fsl/5.0', 
-        '/opt/afni', '/opt/c3d/bin', '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin'])
-    environ['C3DPATH'] = '/opt/c3d/'
-    environ['FSLDIR'] = '/usr/share/fsl/5.0' 
-    environ['FSLOUTPUTTYPE'] = 'NIFTI_GZ'
-    environ['FSLMULTIFILEQUIT'] = 'TRUE'
-    environ['POSSUMDIR'] = '/usr/share/fsl/5.0'
-    environ['LD_LIBRARY_PATH'] = '/usr/lib/fsl/5.0:{}'.format(environ.get('LD_LIBRARY_PATH', ''))
-    environ['FSLTCLSH'] = '/usr/bin/tclsh'
-    environ['FSLWISH'] = '/usr/bin/wish'
-    cmd = ['/code/run.py', BIDS_DIR, INT_DIR, 'participant']
-
-    if pipeline_file:
-        pipeline_file_path = pipeline_file['location']['path']
-        cmd.insert(1, '--pipeline_file')
-        cmd.insert(2, pipeline_file_path)
-
-    log.info('calling C-PAC: %s', cmd)
-    subprocess.check_call(cmd, env=environ)
-
-    int_output_path = os.path.join(INT_DIR, 'output')
-    out_path = os.path.join(OUT_DIR, 'results.zip')
-    log.info('Zipping int_dir to: %s', out_path)
-    with zipfile.ZipFile(out_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-        for root, dirs, files in os.walk(int_output_path):
-            for filename in files:
-                filepath = os.path.join(root, filename)
-                log.info('Adding %s...', filepath)
-                zf.write(filepath)
+        log.info('Zipping int_dir to: %s', out_path)
+        with zipfile.ZipFile(out_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for root, dirs, files in os.walk(int_output_path):
+                for filename in files:
+                    filepath = os.path.join(root, filename)
+                    relpath = os.path.relpath(filepath, int_output_path)
+                    log.info('Adding %s...', relpath)
+                    zf.write(filepath, relpath)
