@@ -3,11 +3,9 @@
 # Example build:
 #   docker build --no-cache --tag flywheel/c-pac `pwd`
 #
-# Example usage: #TODO
-#
 
 # Start with the bids/cpac
-FROM fcpindi/c-pac:latest
+FROM fcpindi/c-pac:release-v1.4.3
 
 # Note the Maintainer
 MAINTAINER Michael Perry <michaelperry@flywheel.io>
@@ -19,7 +17,7 @@ RUN python -c 'import os, json; f = open("/cpac_environ.json", "w"); json.dump(d
 RUN apt-get update && apt-get install -y zip python3-pip
 
 # Install flywheel_bids
-RUN pip3 install flywheel_sdk==6.1.0-dev.2 flywheel_bids
+RUN pip3 install flywheel_sdk==8.2.0 flywheel_bids
 
 # Make directory for flywheel spec (v0)
 ENV FLYWHEEL /flywheel/v0
