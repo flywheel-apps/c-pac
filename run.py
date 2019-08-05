@@ -9,29 +9,9 @@ from collections import OrderedDict
 import psutil
 
 import flywheel
-    
-def escape_shell_chars(path):
-    special_chars = [' ', '\t', '\n', '!', '"', '#', '$', '&', '\'', ')']
-    special_chars.extend(['(', '*', ',', ';', '<', '=', '>', '?', '[', '\\'])
-    special_chars.extend([']', '^', '`', '{', '}', '|', '~', '-', ':'])
-    for ch in special_chars:
-        path = path.replace(ch,'_')
-    return path
 
-def get_Custom_Logger(log_name):
-    # Initialize Custom Logging
-    # Timestamps with logging assist debugging algorithms
-    # With long execution times
-    handler = logging.StreamHandler(stream=sys.stdout)
-    formatter = logging.Formatter(
-                fmt='%(levelname)s - %(name)-8s - %(asctime)s -  %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S')
-    handler.setFormatter(formatter)
-    logger = logging.getLogger(log_name)
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
+from utils import *
 
-    return logger
 
 def Build_CPAC_Params(context):
     # use Ordered Dictionary to keep the order created.
@@ -83,7 +63,7 @@ def Validate_CPAC_Params(cpac_params,context):
         if (cpac_params['mem_mb'] < 0):
             context.log.Warning('You have selected a negative amount of memory. Assuming default of 6 GB.')
         elif (cpac_params['mem_mb'] < 6*1024):
-            context.log.Warning('You have requested less than the default (6 GB). This may cause a crash.')
+            context.log.Warning('You have requested less memory than the default (6 GB). This may cause a crash.')
         elif (cpac_params['mem_mb'] > psutil.virtual_memory()/(1024**2)):
             raise Exception('You are trying to reserve more memory than the system has available.')
 
@@ -213,7 +193,7 @@ if __name__ == '__main__':
 
     except Exception as e:
         context.log.error(e)
-        context.log.error('Cannot execute FLS Anat commands.')
+        context.log.error('Cannot execute C-PAC commands.')
         os.sys.exit(1)
 
     finally:
