@@ -11,21 +11,23 @@ FROM fcpindi/c-pac:release-v1.4.3
 MAINTAINER Michael Perry <michaelperry@flywheel.io>
 
 # Save docker environ
-RUN python -c 'import os, json; f = open("/cpac_environ.json", "w"); json.dump(dict(os.environ), f)'
+RUN python -c 'import os, json; f = open("/tmp/gear_environ.json", "w"); json.dump(dict(os.environ), f)'
 
 # Install packages
-RUN apt-get update && apt-get install -y zip python3-pip
+RUN apt-get update && apt-get install -y zip python3-pip tree
 
 # Install flywheel_bids
-RUN pip3 install flywheel_sdk==8.2.0 flywheel_bids
+RUN pip3 install flywheel_sdk==8.2.0 flywheel_bids psutil
 
 # Make directory for flywheel spec (v0)
 ENV FLYWHEEL /flywheel/v0
-RUN mkdir -p ${FLYWHEEL}
+WORKDIR ${FLYWHEEL}
 
 # Copy and configure run script and metadata code
 COPY run.py \
       manifest.json \
       ${FLYWHEEL}/
 
-ENTRYPOINT ["bash"]
+# Configure entrypoint
+RUN chmod a+x /flywheel/v0/run.py
+ENTRYPOINT ["/flywheel/v0/run.py"]
