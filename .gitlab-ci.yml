@@ -9,6 +9,8 @@ before_script:
 
 build-tag:
   stage: build
+  tags:
+    - docker
   script:
     # - docker run --rm -i hadolint/hadolint < Dockerfile
     - docker build -t "flywheel/c-pac:$CI_COMMIT_REF_NAME" .
@@ -18,6 +20,8 @@ build-tag:
 
 build:
   stage: build
+  tags:
+    - docker
   script:
     # - docker run --rm -i hadolint/hadolint < Dockerfile
     - docker build -t "flywheel/c-pac:latest" .
