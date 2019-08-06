@@ -2,6 +2,7 @@
 This file contains various common utilities that facilitate gear excecution
 """
 import logging
+import sys
 
 def escape_shell_chars(path):
     special_chars = [' ', '\t', '\n', '!', '"', '#', '$', '&', '\'', ')']
