@@ -9,9 +9,8 @@ from collections import OrderedDict
 import psutil
 
 import flywheel
-from utils import *
-from custom_gear_utils import *
-
+from utils import get_Custom_Logger, escape_shell_chars
+import custom_gear_utils as cgu
 
 if __name__ == '__main__':
     # Preamble: take care of all gear-typical activities.
@@ -20,7 +19,7 @@ if __name__ == '__main__':
     context.log = get_Custom_Logger('[flywheel:C-PAC]')
 
     # context.init_logging()
-    context.log_config()
+    # context.log_config()
 
     # grab environment for gear
     with open('/tmp/gear_environ.json', 'r') as f:
@@ -66,7 +65,7 @@ if __name__ == '__main__':
         # Create session_label in work directory
         session_dir = op.join(context.work_dir, session_label)
         os.makedirs(session_dir,exist_ok=True)
-        
+
         # Command dictionary specifying prefix and suffix
         # for command-line parameters
         context.Custom_Dict['commandD'] = {
@@ -76,24 +75,31 @@ if __name__ == '__main__':
         # The following three functions are defined in
         # custom_gear_utils.py
 
+        # Specify context config "blacklist" to avoid incorporating commands
+        # into command line arguments
+        context.Custom_Dict['blacklist'] =['Save output on Error']
+
         # Build CPAC optional parameters with gear context
-        Build_CPAC_Params(context)
+        cgu.Build_Params(context)
 
         # Validate those parameters for conflicts
-        Validate_CPAC_Params(context)
+        cgu.Validate_Params(context)
 
         # Execute those parameters with prefix and suffix in 
         # a command dictionary
-        Execute_CPAC_Params(context)
+        cgu.Execute_Params(context)
         
         context.log.info("Commands successfully executed!")
         os.sys.exit(0)
 
     except Exception as e:
+        context.Custom_Dict['Exception']=e
         context.log.error(e,)
         context.log.error('Cannot execute CPAC commands.',)
         os.sys.exit(1)
 
     finally:
-        # Regardless of exit status, compress files for output.
-        Zip_Results(context)
+        # Save Zipped output on Error Conditions 
+        if context.config['Save output on Error'] or \
+            'Exception' not in context.Custom_Dict.keys():
+            cgu.Zip_Results(context)

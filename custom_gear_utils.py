@@ -6,7 +6,7 @@ import psutil
 
 import flywheel
 
-def Build_CPAC_Params(context):
+def Build_Params(context):
     # use Ordered Dictionary to keep the order created.
     # Default in Python 3.6 onward
     Params=OrderedDict()
@@ -36,7 +36,7 @@ def Build_CPAC_Params(context):
 
     context.Custom_Dict['cpac_params'] = Params
 
-def Validate_CPAC_Params(context):
+def Validate_Params(context):
     """
     Input: gear context with parameters in context.Custom_Dict['cpac_params']
     Attempts to correct any violations
@@ -109,7 +109,7 @@ def Build_Command_List(command, ParamList):
                     command.append('--' + key + '=' + str(ParamList[key]))
     return command
 
-def Execute_CPAC_Params(context, dry_run=True):
+def Execute_Params(context, dry_run=True):
         # Get Params
         cpac_params = context.Custom_Dict['cpac_params']
         commandD = context.Custom_Dict['commandD']

@@ -3,14 +3,13 @@ This file contains various common utilities that facilitate gear excecution
 """
 import logging
 import sys
+import re
 
 def escape_shell_chars(path):
-    special_chars = [' ', '\t', '\n', '!', '"', '#', '$', '&', '\'', ')']
-    special_chars.extend(['(', '*', ',', ';', '<', '=', '>', '?', '[', '\\'])
-    special_chars.extend([']', '^', '`', '{', '}', '|', '~', '-', ':'])
-    for ch in special_chars:
-        path = path.replace(ch,'_')
-    return path
+    """
+    Ensure that a path contains all shell-safe characters
+    """
+    return re.sub('[^0-9a-zA-Z./]+', '_', path)
 
 def get_Custom_Logger(log_name):
     # Initialize Custom Logging

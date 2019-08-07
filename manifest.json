@@ -46,10 +46,15 @@
           "default": 0,
           "description": "Amount of RAM available to the pipeline in megabytes. If this is specified along with mem_mb, this flag will take precedence.d (<=0: Use default of 6 GB).",
           "type": "number"
-      },
+        },
         "save_working_dir": {
           "default": false,
           "description": "Save the contents of the working directory.",
+          "type": "boolean"
+        },
+        "Save output on Error":{
+          "default": false,
+          "description": "Save the contents of the working directory to output on failure (can be large).",
           "type": "boolean"
         }
     },
