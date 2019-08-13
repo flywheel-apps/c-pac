@@ -27,7 +27,8 @@ if __name__ == '__main__':
     try: # To download and validate BIDS 
         # for debugging:
         if context.destination['id'] == 'aex':
-            # give it the tome session
+            # give it an acquisition id, the below man not be valid
+            # for a given flywheel instance
             context.destination['id']='5d2761383289d60037e8b180'
         # A routine to validate on a "shadow" structure is in development
         context.Custom_Dict['bids_dir'] = op.join(context.work_dir,'bids')
