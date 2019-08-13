@@ -52,9 +52,19 @@
           "description": "Save the contents of the working directory.",
           "type": "boolean"
         },
-        "Save output on Error":{
+        "gear-save-output-on-error":{
           "default": false,
           "description": "Save the contents of the working directory to output on failure (can be large).",
+          "type": "boolean"
+        },
+        "gear-run-bids-validation":{
+          "default": true,
+          "description": "Run bids-validator on a the gear bids directory.",
+          "type": "boolean"
+        },
+        "gear-abort-on-bids-error":{
+          "default": false,
+          "description": "If bids-validator returns an error, abort gear execution.",
           "type": "boolean"
         }
     },

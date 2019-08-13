@@ -1,25 +1,18 @@
 #!/usr/bin/env python3
-import logging
 import json
 import os, os.path as op
 import subprocess as sp
 import sys
-import zipfile
-from collections import OrderedDict
-import psutil
 
 import flywheel
-from utils import get_Custom_Logger, escape_shell_chars
-import custom_gear_utils as cgu
+from utils.Custom_Logger import get_Custom_Logger
+from utils import bids, args, results
 
 if __name__ == '__main__':
     # Preamble: take care of all gear-typical activities.
     context = flywheel.GearContext()
     #get_Custom_Logger is defined in utils.py
     context.log = get_Custom_Logger('[flywheel:C-PAC]')
-
-    # context.init_logging()
-    # context.log_config()
 
     # grab environment for gear
     with open('/tmp/gear_environ.json', 'r') as f:
@@ -37,34 +30,24 @@ if __name__ == '__main__':
             # give it the tome session
             context.destination['id']='5d2761383289d60037e8b180'
         # A routine to validate on a "shadow" structure is in development
-        bids_dir = op.join(context.work_dir,'bids')
-        # Download Bids Directory First
-        #bids_dir = context.download_session_bids(
-        #    target_dir = op.join(context.work_dir,'bids')
-        #)
-
-        # Validate bids directory here
-        # NOTE: C-PAC runs its own bids validator
+        context.Custom_Dict['bids_dir'] = op.join(context.work_dir,'bids')
+        bids.download(context)
+        bids.run_validation(context)
+        # NOTE: C-PAC runs its own bids validator that does
+        # not report until the end of cpac execution
     except Exception as e:
         context.log.error('Cannot download and validate bids.',)
         context.log.error(e,)
-        os.sys.exit(1)
-    # There is no cleanup after this errors out or not.
-    # We exit the program. Without validated bids, we 
-    # cannot proceed.
+        if context.config['gear-abort-on-bids-error']
+            os.sys.exit(1)
+            # There is no cleanup after this errors out or not.
+            # We exit the program. Without validated bids, we 
+            # cannot proceed.
 
     try: # To Build/Validate/Execute CPAC commands
         # Make session-labeled directory to store all output, logs, and crash
         # Stash in gear context for later use
-        fw = context.client
-        analysis = fw.get(context.destination['id'])
-        session = fw.get(analysis.parents['session'])
-        session_label = escape_shell_chars(session.label)
-        # attach session_label to Custom_Dict
-        context.Custom_Dict['session_label'] = session_label
-        # Create session_label in work directory
-        session_dir = op.join(context.work_dir, session_label)
-        os.makedirs(session_dir,exist_ok=True)
+        args.make_session_directory(context)
 
         # Command dictionary specifying prefix and suffix
         # for command-line parameters
@@ -77,17 +60,19 @@ if __name__ == '__main__':
 
         # Specify context config "blacklist" to avoid incorporating commands
         # into command line arguments
-        context.Custom_Dict['blacklist'] =['Save output on Error']
+        context.Custom_Dict['blacklist'] = ['gear-save-output-on-error',
+                                            'gear-run-bids-validation',
+                                            'gear-abort-on-bids-error']
 
         # Build CPAC optional parameters with gear context
-        cgu.Build_Params(context)
+        args.build(context)
 
         # Validate those parameters for conflicts
-        cgu.Validate_Params(context)
+        args.validate(context)
 
         # Execute those parameters with prefix and suffix in 
         # a command dictionary
-        cgu.Execute_Params(context)
+        args.execute(context)
         
         context.log.info("Commands successfully executed!")
         os.sys.exit(0)
@@ -100,6 +85,8 @@ if __name__ == '__main__':
 
     finally:
         # Save Zipped output on Error Conditions 
-        if context.config['Save output on Error'] or \
+        # If we have an Exception and 'gear-save-output-on-error'
+        # If we have no Exception at all 
+        if context.config['gear-save-output-on-error'] or \
             'Exception' not in context.Custom_Dict.keys():
-            cgu.Zip_Results(context)
+            results.Zip_Results(context)
