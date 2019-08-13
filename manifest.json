@@ -8,12 +8,12 @@
     "source": "https://github.com/flywheel-apps/c-pac",
     "license": "Apache-2.0",
     "flywheel": "0",
-    "version": "0.1.0-dev.13",
+    "version": "0.1.14_1.4.1",
     "custom": {
-        "docker-image": "flywheel/c-pac:0.1.0-dev.13",
+        "docker-image": "flywheel/c-pac:0.1.14_1.4.1",
         "gear-builder": {
                 "category": "analysis",
-                "image": "flywheel/c-pac:0.1.0-dev.13"
+                "image": "flywheel/c-pac:0.1.14_1.4.1"
         }
     },
     "inputs": {

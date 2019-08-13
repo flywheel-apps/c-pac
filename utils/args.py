@@ -3,6 +3,7 @@ import subprocess as sp
 import sys
 from collections import OrderedDict
 import psutil
+import re
 
 import flywheel
 
@@ -21,6 +22,7 @@ def make_session_directory(context):
     context.Custom_Dict['session_label'] = session_label
     # Create session_label in work directory
     session_dir = op.join(context.work_dir, session_label)
+    context.Custom_Dict['session_dir']=session_dir
     os.makedirs(session_dir,exist_ok=True)
 
 def build(context):
@@ -126,7 +128,7 @@ def Build_Command_List(command, ParamList):
                     command.append('--' + key + '=' + str(ParamList[key]))
     return command
 
-def execute(context, dry_run=True):
+def execute(context, dry_run=False):
         # Get Params
         cpac_params = context.Custom_Dict['cpac_params']
         commandD = context.Custom_Dict['commandD']

@@ -38,7 +38,7 @@ if __name__ == '__main__':
     except Exception as e:
         context.log.error('Cannot download and validate bids.',)
         context.log.error(e,)
-        if context.config['gear-abort-on-bids-error']
+        if context.config['gear-abort-on-bids-error']:
             os.sys.exit(1)
             # There is no cleanup after this errors out or not.
             # We exit the program. Without validated bids, we 
@@ -53,14 +53,16 @@ if __name__ == '__main__':
         # for command-line parameters
         context.Custom_Dict['commandD'] = {
                     'prefix' : ['/code/run.py'],
-                    'suffix' : [bids_dir, session_dir, 'participant']
+                    'suffix' : [context.Custom_Dict['bids_dir'], 
+                                context.Custom_Dict['session_dir'], 
+                                'participant']
         }
         # The following three functions are defined in
         # custom_gear_utils.py
 
         # Specify context config "blacklist" to avoid incorporating commands
         # into command line arguments
-        context.Custom_Dict['blacklist'] = ['gear-save-output-on-error',
+        context.Custom_Dict['black_list'] = ['gear-save-output-on-error',
                                             'gear-run-bids-validation',
                                             'gear-abort-on-bids-error']
 

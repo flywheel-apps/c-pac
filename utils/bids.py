@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os
+import os, os.path as op
 import subprocess as sp
 import json
 import pprint
@@ -21,7 +21,7 @@ def download(context):
     # (this saves time when developing locally)
     if not op.isdir(bids_dir):
 
-        bids_dir = context.download_session_bids()
+        bids_dir = context.download_session_bids(target=bids_dir)
         # Use the following command instead (after core is updated with a fix
         # for it) because it will return the existing dataset_description.json
         # file and does not download scans that don't need to be considered.
