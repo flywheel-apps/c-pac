@@ -1,0 +1,30 @@
+# Official docker image.
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u $DOCKER_CI_USER -p $DOCKER_CI_PASS
+
+build-tag:
+  stage: build
+  tags:
+    - docker
+  script:
+    # - docker run --rm -i hadolint/hadolint < Dockerfile
+    - docker build -t "flywheel/c-pac:$CI_COMMIT_REF_NAME" .
+    - docker push "flywheel/c-pac:$CI_COMMIT_REF_NAME"
+  only:
+    - tags
+
+build:
+  stage: build
+  tags:
+    - docker
+  script:
+    # - docker run --rm -i hadolint/hadolint < Dockerfile
+    - docker build -t "flywheel/c-pac:latest" .
+  except:
+    - tags
+

@@ -3,32 +3,31 @@
 # Example build:
 #   docker build --no-cache --tag flywheel/c-pac `pwd`
 #
-# Example usage: #TODO
-#
 
 # Start with the bids/cpac
-FROM bids/cpac:v1.0.1a_7
+FROM fcpindi/c-pac:release-v1.4.3
 
 # Note the Maintainer
 MAINTAINER Michael Perry <michaelperry@flywheel.io>
 
+# Save docker environ
+RUN python -c 'import os, json; f = open("/tmp/gear_environ.json", "w"); json.dump(dict(os.environ), f)'
+
 # Install packages
-RUN apt-get update && apt-get install -y zip
+RUN apt-get update && apt-get install -y zip python3-pip tree
+
+# Install flywheel_bids
+RUN pip3 install flywheel_sdk==8.2.0 flywheel_bids psutil
 
 # Make directory for flywheel spec (v0)
 ENV FLYWHEEL /flywheel/v0
-RUN mkdir -p ${FLYWHEEL}
+WORKDIR ${FLYWHEEL}
 
 # Copy and configure run script and metadata code
-COPY bin/run \
+COPY run.py \
       manifest.json \
       ${FLYWHEEL}/
 
-# Handle file properties for execution
-RUN chmod +x ${FLYWHEEL}/run
-
-# Handle Environment preservation for Flywheel Engine
-RUN env -u HOSTNAME -u PWD > ${FLYWHEEL}/docker-env.sh
-
-# Run the run.sh script on entry.
-ENTRYPOINT ["/flywheel/v0/run"]
+# Configure entrypoint
+RUN chmod a+x /flywheel/v0/run.py
+ENTRYPOINT ["/flywheel/v0/run.py"]
