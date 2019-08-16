@@ -4,7 +4,7 @@ This file contains various common utilities that facilitate gear excecution
 import logging
 import sys
 
-def get_Custom_Logger(log_name):
+def get_custom_logger(log_name):
     # Initialize Custom Logging
     # Timestamps with logging assist debugging algorithms
     # With long execution times

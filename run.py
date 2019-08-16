@@ -5,14 +5,14 @@ import subprocess as sp
 import sys
 
 import flywheel
-from utils.Custom_Logger import get_Custom_Logger
+from utils.custom_logger import get_custom_logger
 from utils import bids, args, results
 
 if __name__ == '__main__':
     # Preamble: take care of all gear-typical activities.
     context = flywheel.GearContext()
-    #get_Custom_Logger is defined in utils.py
-    context.log = get_Custom_Logger('[flywheel:C-PAC]')
+    #get_custom_logger is defined in utils.py
+    context.log = get_custom_logger('[flywheel:C-PAC]')
 
     # grab environment for gear
     with open('/tmp/gear_environ.json', 'r') as f:
