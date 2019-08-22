@@ -18,11 +18,11 @@ def make_session_directory(context):
     session = fw.get(analysis.parents['session'])
     # Make sure we have shell-safe characters in path
     session_label = re.sub('[^0-9a-zA-Z./]+', '_', session.label)
-    # attach session_label to Custom_Dict
-    context.Custom_Dict['session_label'] = session_label
+    # attach session_label to custom_dict
+    context.custom_dict['session_label'] = session_label
     # Create session_label in work directory
     session_dir = op.join(context.work_dir, session_label)
-    context.Custom_Dict['session_dir']=session_dir
+    context.custom_dict['session_dir']=session_dir
     os.makedirs(session_dir,exist_ok=True)
 
 def build(context):
@@ -33,10 +33,10 @@ def build(context):
     if context.get_input_path('pipeline_file'):
         Params['pipeline_file'] = context.get_input_path('pipeline_file')
 
-    # This "black_list" list will skip keys if present in context.Custom_Dict
+    # This "black_list" list will skip keys if present in context.custom_dict
     black_list = []
-    if 'black_list' in context.Custom_Dict.keys():
-        black_list = context.Custom_Dict['black_list']
+    if 'black_list' in context.custom_dict.keys():
+        black_list = context.custom_dict['black_list']
 
     config = context.config
     for key in config.keys():
@@ -53,15 +53,15 @@ def build(context):
                     if config[key] > 0:
                         Params[key] = config[key]
 
-    context.Custom_Dict['cpac_params'] = Params
+    context.custom_dict['cpac_params'] = Params
 
 def validate(context):
     """
-    Input: gear context with parameters in context.Custom_Dict['cpac_params']
+    Input: gear context with parameters in context.custom_dict['cpac_params']
     Attempts to correct any violations
     Logs warning on what may cause problems
     """
-    cpac_params = context.Custom_Dict['cpac_params']
+    cpac_params = context.custom_dict['cpac_params']
     # Check that cpus are between 0 and max number of cpus
     if "n_cpus" in cpac_params.keys():
         if cpac_params["n_cpus"] < 0:
@@ -130,9 +130,9 @@ def Build_Command_List(command, ParamList):
 
 def execute(context, dry_run=False):
         # Get Params
-        cpac_params = context.Custom_Dict['cpac_params']
-        commandD = context.Custom_Dict['commandD']
-        environ = context.Custom_Dict['environ']
+        cpac_params = context.custom_dict['cpac_params']
+        commandD = context.custom_dict['commandD']
+        environ = context.custom_dict['environ']
 
         # Build command-line parameters
         command = Build_Command_List(commandD['prefix'], cpac_params)

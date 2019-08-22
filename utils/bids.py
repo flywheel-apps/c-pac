@@ -15,7 +15,7 @@ def download(context):
     """
 
     # the usual BIDS path:
-    bids_dir = context.Custom_Dict['bids_dir']
+    bids_dir = context.custom_dict['bids_dir']
 
     # If BIDS was already downloaded, don't do it again
     # (this saves time when developing locally)
@@ -72,8 +72,8 @@ def run_validation(context):
     """
 
     config = context.config
-    bids_dir = context.Custom_Dict['bids_dir']
-    environ = context.Custom_Dict['environ']
+    bids_dir = context.custom_dict['bids_dir']
+    environ = context.custom_dict['environ']
     if 'gear-run-bids-validation' not in config.keys():
         raise Exception("'gear-run-bids-validation' not in gear configuration.")
     elif config['gear-run-bids-validation']:

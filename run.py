@@ -18,20 +18,15 @@ if __name__ == '__main__':
     with open('/tmp/gear_environ.json', 'r') as f:
         environ = json.load(f)
 
-    # This gear will use a "Custom_Dict" dictionary as a custom-user field 
+    # This gear will use a "custom_dict" dictionary as a custom-user field 
     # on the gear context.
-    context.Custom_Dict ={}
+    context.custom_dict ={}
 
-    context.Custom_Dict['environ'] = environ
+    context.custom_dict['environ'] = environ
 
     try: # To download and validate BIDS 
-        # for debugging:
-        if context.destination['id'] == 'aex':
-            # give it an acquisition id, the below man not be valid
-            # for a given flywheel instance
-            context.destination['id']='5d2761383289d60037e8b180'
         # A routine to validate on a "shadow" structure is in development
-        context.Custom_Dict['bids_dir'] = op.join(context.work_dir,'bids')
+        context.custom_dict['bids_dir'] = op.join(context.work_dir,'bids')
         bids.download(context)
         bids.run_validation(context)
         # NOTE: C-PAC runs its own bids validator that does
@@ -52,10 +47,10 @@ if __name__ == '__main__':
 
         # Command dictionary specifying prefix and suffix
         # for command-line parameters
-        context.Custom_Dict['commandD'] = {
+        context.custom_dict['commandD'] = {
                     'prefix' : ['/code/run.py'],
-                    'suffix' : [context.Custom_Dict['bids_dir'], 
-                                context.Custom_Dict['session_dir'], 
+                    'suffix' : [context.custom_dict['bids_dir'], 
+                                context.custom_dict['session_dir'], 
                                 'participant']
         }
         # The following three functions are defined in
@@ -63,7 +58,7 @@ if __name__ == '__main__':
 
         # Specify context config "blacklist" to avoid incorporating commands
         # into command line arguments
-        context.Custom_Dict['black_list'] = ['gear-save-output-on-error',
+        context.custom_dict['black_list'] = ['gear-save-output-on-error',
                                             'gear-run-bids-validation',
                                             'gear-abort-on-bids-error']
 
@@ -81,7 +76,7 @@ if __name__ == '__main__':
         os.sys.exit(0)
 
     except Exception as e:
-        context.Custom_Dict['Exception']=e
+        context.custom_dict['Exception']=e
         context.log.error(e,)
         context.log.error('Cannot execute CPAC commands.',)
         os.sys.exit(1)
@@ -91,5 +86,5 @@ if __name__ == '__main__':
         # If we have an Exception and 'gear-save-output-on-error'
         # If we have no Exception at all 
         if context.config['gear-save-output-on-error'] or \
-            'Exception' not in context.Custom_Dict.keys():
+            'Exception' not in context.custom_dict.keys():
             results.Zip_Results(context)

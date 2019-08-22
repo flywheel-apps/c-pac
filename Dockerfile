@@ -8,7 +8,7 @@
 FROM fcpindi/c-pac:release-v1.4.1
 
 # Note the Maintainer
-MAINTAINER Michael Perry <michaelperry@flywheel.io>
+MAINTAINER Flywheel <support@flywheel.io>
 
 # Install packages
 RUN apt-get update && \
