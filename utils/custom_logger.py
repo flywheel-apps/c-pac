@@ -3,15 +3,8 @@ This file contains various common utilities that facilitate gear excecution
 """
 import logging
 import sys
-import re
 
-def escape_shell_chars(path):
-    """
-    Ensure that a path contains all shell-safe characters
-    """
-    return re.sub('[^0-9a-zA-Z./]+', '_', path)
-
-def get_Custom_Logger(log_name):
+def get_custom_logger(log_name):
     # Initialize Custom Logging
     # Timestamps with logging assist debugging algorithms
     # With long execution times
