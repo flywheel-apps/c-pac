@@ -33,9 +33,10 @@ ENV FLYWHEEL /flywheel/v0
 WORKDIR ${FLYWHEEL}
 
 # Copy and configure run script and metadata code
-COPY run.py \
-      manifest.json \
-      ${FLYWHEEL}/
+# Copy executable/manifest to Gear
+COPY run.py ${FLYWHEEL}/run.py
+COPY utils ${FLYWHEEL}/utils
+COPY manifest.json ${FLYWHEEL}/manifest.json
 
 # Save docker environ
 RUN python -c 'import os, json; f = open("/tmp/gear_environ.json", "w"); json.dump(dict(os.environ), f)'
