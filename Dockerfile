@@ -5,7 +5,7 @@
 #
 
 # Start with the bids/cpac
-FROM fcpindi/c-pac:release-v1.4.1
+FROM fcpindi/c-pac:release-v1.6.0
 
 # Note the Maintainer
 MAINTAINER Flywheel <support@flywheel.io>
