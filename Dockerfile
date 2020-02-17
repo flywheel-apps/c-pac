@@ -8,7 +8,7 @@
 FROM fcpindi/c-pac:release-v1.6.0
 
 # Note the Maintainer
-MAINTAINER Flywheel <support@flywheel.io>
+LABEL MAINTAINER "Flywheel <support@flywheel.io>"
 
 # Install packages
 RUN apt-get update && \
@@ -21,8 +21,9 @@ RUN apt-get update && \
 # Install gear python dependencies
 RUN pip3 install --upgrade pip && \
 	pip3.5 install \
-	flywheel_sdk==8.2.0 \
+	flywheel_sdk==10.7.0 \
 	flywheel_bids \
+    flywheel-gear-toolkit \
 	bids-validator \
 	psutil && \
     rm -rf /root/.cache/pip
