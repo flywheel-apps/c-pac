@@ -1,3 +1,5 @@
+# The C-PAC gear is now hosted on [GitLab](https://gitlab.com/flywheel-io/flywheel-apps/cpac)
+
 [![Docker Pulls](https://img.shields.io/docker/pulls/flywheel/c-pac.svg)](https://hub.docker.com/r/flywheel/c-pac/)
 [![Docker Stars](https://img.shields.io/docker/stars/flywheel/c-pac.svg)](https://hub.docker.com/r/flywheel/c-pac/)
 
